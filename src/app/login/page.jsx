@@ -65,7 +65,7 @@ const AnimatedLoginPage = () => {
         </form>
 
         <p className="mt-4 text-center text-gray-600 text-sm">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <a href="#" className="text-indigo-500 hover:underline">
             Sign Up
           </a>

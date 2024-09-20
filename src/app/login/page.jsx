@@ -1,36 +1,74 @@
 "use client";
+import instance from "@/utils";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const AnimatedLoginPage = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  // const isValidated = () => {
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   let validation = true;
+
+  //   if (email.length === 0 || !emailRegex?.test(email)) {
+  //     validation = false;
+  //     setErrors((prev) => ({ ...prev, email: true }));
+  //   }
+  //   if (password.length === 0) {
+  //     validation = false;
+  //     setErrors((prev) => ({ ...prev, password: true }));
+  //   }
+  //   return validation;
+  // };
+
+  const loginUser = async (e) => {
     e.preventDefault();
-    // Handle the login logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
+    // if (isValidated()) {
+    const data = {
+      email,
+      password,
+    };
+    try {
+      // setIsLoading(true);
+      const res = await instance.post("/auth/login", data);
+      const token = res?.data?.token;
+      localStorage.setItem("token", token);
+      const user = jwtDecode(token);
+      // setWebUser(user);
+      router.replace("/");
+      // showSnackbar("User logged in successfully.", "success");
+    } catch (error) {
+      console.error(error);
+      // showSnackbar(error?.response?.data?.message, "success");
+      // setIsLoading(false);
+      // }
+      // setErrors(false);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center bg-gradient-to-br from-purple-400 to-blue-600 min-h-screen">
-      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md transform transition-all hover:scale-105 duration-500 ease-in-out">
-        <h2 className="mb-8 font-bold text-4xl text-center text-gray-800 hover:text-indigo-600 transition-all duration-300 ease-in-out">
-          Payments App
-        </h2>
-
-        <form onSubmit={handleSubmit}>
+    <div className="flex justify-center items-center bg-gray-100 p-6 sm:p-12 min-h-screen">
+      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-lg transform transition-all">
+        <h1 className="mb-5 font-bold text-6xl text-center">
+          <span className="text-blue-600">city</span>
+          <span className="text-red-600">biz</span>+
+        </h1>
+        <form onSubmit={loginUser}>
+          {/* Email Input */}
           <div className="mb-6">
             <label
               htmlFor="email"
-              className="block mb-2 text-gray-600 text-sm hover:text-indigo-500 transition-all duration-300 ease-in-out"
+              className="block mb-2 text-gray-600 text-sm hover:text-blue-600 transition-all duration-300 ease-in-out"
             >
               Email
             </label>
             <input
               type="email"
               id="email"
-              className="border-gray-300 focus:border-indigo-500 px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-200 w-full focus:outline-none transition-all duration-300"
+              className="border-gray-300 px-4 py-3 border focus:border-red-500 rounded-lg focus:ring-2 focus:ring-red-300 w-full focus:outline-none transition-all duration-300"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -38,17 +76,18 @@ const AnimatedLoginPage = () => {
             />
           </div>
 
+          {/* Password Input */}
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block mb-2 text-gray-600 text-sm hover:text-indigo-500 transition-all duration-300 ease-in-out"
+              className="block mb-2 text-gray-600 text-sm hover:text-blue-600 transition-all duration-300 ease-in-out"
             >
               Password
             </label>
             <input
               type="password"
               id="password"
-              className="border-gray-300 focus:border-indigo-500 px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-200 w-full focus:outline-none transition-all duration-300"
+              className="border-gray-300 px-4 py-3 border focus:border-red-500 rounded-lg focus:ring-2 focus:ring-red-300 w-full focus:outline-none transition-all duration-300"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -56,17 +95,18 @@ const AnimatedLoginPage = () => {
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="bg-indigo-500 hover:bg-indigo-600 py-2 rounded-md focus:ring-2 focus:ring-indigo-200 w-full text-white transition-all duration-300 ease-in-out focus:outline-none"
+            className="bg-red-500 hover:bg-red-600 py-3 rounded-lg focus:ring-2 focus:ring-red-300 w-full font-semibold text-white transition-all duration-300 ease-in-out focus:outline-none"
           >
             Submit
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-600 text-sm">
+        <p className="mt-6 text-center text-gray-600 text-sm">
           Don&apos;t have an account?{" "}
-          <a href="#" className="text-indigo-500 hover:underline">
+          <a href="/signup" className="text-red-500">
             Sign Up
           </a>
         </p>
@@ -75,4 +115,4 @@ const AnimatedLoginPage = () => {
   );
 };
 
-export default AnimatedLoginPage;
+export default LoginPage;

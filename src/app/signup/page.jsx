@@ -1,5 +1,9 @@
 "use client";
 
+import Loader from "@/components/Loader";
+import instance from "@/utils";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const SignUpPage = () => {
@@ -7,24 +11,39 @@ const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const signupUser = async (e) => {
     e.preventDefault();
-    // Handle the sign-up logic here
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
+    const data = {
+      email,
+      password,
+      name,
+      phoneNumber,
+    };
+    try {
+      setIsLoading(true);
+      const res = await instance.post("/auth/signup", data);
+      const token = res?.data?.token;
+      localStorage.setItem("token", token);
+      const user = jwtDecode(token);
+      router.replace("/");
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex justify-center items-center p-4 h-full">
       <div className="bg-white shadow-xl p-8 rounded-lg w-full max-w-md">
-      <h1 className="mb-5 font-bold text-6xl text-center">
-        <span className="text-blue-600">city</span>
-        <span className="text-red-600">biz</span>+
-      </h1>
+        <h1 className="mb-5 font-bold text-6xl text-center">
+          <span className="text-blue-600">city</span>
+          <span className="text-red-600">biz</span>+
+        </h1>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={signupUser}>
           <div className="mb-6">
             <label
               htmlFor="name"
@@ -101,7 +120,7 @@ const SignUpPage = () => {
             type="submit"
             className="bg-red-500 hover:bg-red-600 py-2 rounded-md focus:ring-2 focus:ring-red-200 w-full text-white transition-all duration-300 ease-in-out focus:outline-none"
           >
-            Submit
+            {isLoading ? <Loader size={"small"} /> : "Submit"}
           </button>
         </form>
 

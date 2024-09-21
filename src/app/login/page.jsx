@@ -1,4 +1,5 @@
 "use client";
+import Loader from "@/components/Loader";
 import instance from "@/utils";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
@@ -8,44 +9,24 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
-  // const isValidated = () => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   let validation = true;
-
-  //   if (email.length === 0 || !emailRegex?.test(email)) {
-  //     validation = false;
-  //     setErrors((prev) => ({ ...prev, email: true }));
-  //   }
-  //   if (password.length === 0) {
-  //     validation = false;
-  //     setErrors((prev) => ({ ...prev, password: true }));
-  //   }
-  //   return validation;
-  // };
+  const [isLoading, setIsLoading] = useState(false);
 
   const loginUser = async (e) => {
     e.preventDefault();
-    // if (isValidated()) {
     const data = {
       email,
       password,
     };
     try {
-      // setIsLoading(true);
+      setIsLoading(true);
       const res = await instance.post("/auth/login", data);
       const token = res?.data?.token;
       localStorage.setItem("token", token);
       const user = jwtDecode(token);
-      // setWebUser(user);
       router.replace("/");
-      // showSnackbar("User logged in successfully.", "success");
     } catch (error) {
       console.error(error);
-      // showSnackbar(error?.response?.data?.message, "success");
-      // setIsLoading(false);
-      // }
-      // setErrors(false);
+      setIsLoading(false);
     }
   };
 
@@ -100,7 +81,7 @@ const LoginPage = () => {
             type="submit"
             className="bg-red-500 hover:bg-red-600 py-3 rounded-lg focus:ring-2 focus:ring-red-300 w-full font-semibold text-white transition-all duration-300 ease-in-out focus:outline-none"
           >
-            Submit
+            {isLoading ? <Loader size={"small"} /> : "Submit"}
           </button>
         </form>
 
